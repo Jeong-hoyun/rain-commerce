@@ -1,34 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## 비오는 날에는 레인보우닷컴
 
-## Getting Started
+🪄 개요
+개인 프로젝트입니다. 일반적인 커머스 사이트에 비오는 시간에 맞춰서 할인하는 사이트를 제작할 예정입니다. 
 
-First, run the development server:
+## 🤼‍♀️ Contributor(FE)
+ [@Jeong-hoyun](https://github.com/Jeong-hoyun)
 
-```bash
-npm run dev
-# or
-yarn dev
+## 📚 Tech Requiremenet (tech stack)
+- <img src="https://img.shields.io/badge/html5-E34F26?style=for-the-badge&logo=html5&logoColor=white">
+- <img src="https://img.shields.io/badge/typescript-0000FF?style=for-the-badge&logo=typescript&logoColor=white">
+- <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=Next.js&logoColor=white">
+
+## Script
+
+```
+$ yarn run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## ✅ 요구사항
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### 필수 요구사항 -
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- [ ] DB는 planetscale을 이용한다.
+- [ ] 위시리스트 기능 구현을 해야한다
+      (선호도 확인을 통한 고객 재유치 용 기능)- 상품 후기 기능 구현을 해야한다
+- [ ] 마이페이지를 구현한다
+- [ ] 카테고리별 페이지를 구현한다.
+- [ ] 검색을 구현한다
+- [ ] 상세페이지를 구현한다
+- [ ] 회원 가입과 로그인을 구현한다
