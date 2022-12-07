@@ -27,16 +27,47 @@ async function getProduct(id:number) {
     }
 }
 
+async function takeProduct(skip:number,take:number) {
+    try {
+        const response =await prisma.products.findMany(
+            {
+               skip:skip,
+               take:take
+            }
+        )   
+        return response       
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+async function countProduct() {
+    try {
+        const response =await prisma.products.count()   
+        return response       
+    } catch (error) {
+        console.error(error)
+    }
+}
+
+
 
 
 
 export default async function handler(
     req:NextApiRequest,res:NextApiResponse
-    ) {
-     
+    ) {         
           try {             
             const {id}=req.query 
-           if(id===undefined){
+            const {skip,take}=req.query
+            const {count}=req.query      
+          if(count!=null){
+            const response=await countProduct() 
+            res.status(200).json({item:response,msg:"success"})
+          }else if(skip!=null&&take!=null){
+                const response=await takeProduct(Number(skip),Number(take)) 
+                res.status(200).json({item:response,msg:"success"})
+            }else if(id===undefined){
                 const response=await getProducts()
                 res.status(200).json({item:response,msg:"success"})
                 return

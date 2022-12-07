@@ -4,7 +4,6 @@ import { EditorState, convertToRaw,convertFromRaw} from 'draft-js';
 import axios from 'axios';
 import CustomEditor from './../../../components/common/editor';
 
-
 const Editor = () => {
 
      const [editorState,setEditorState]=useState<EditorState|undefined>(undefined)
@@ -33,16 +32,15 @@ const Editor = () => {
 
      const onSave= async()=>{
       try {
-      const res=  await axios.post('/api/product',JSON.stringify({
-          body:{
+      const res= await axios.post('/api/product',
+      {     
             productId:productId,
-            itemContents:JSON.stringify(
+            itemContents:
               editorState?
-              convertToRaw(editorState.getCurrentContent())
-              :  null
-            )
-          }
-        }))
+              JSON.stringify( convertToRaw(editorState.getCurrentContent()))
+              :  null           
+        
+        })
         console.log(res)
         alert("저장되었습니다")
       } catch (error) {
@@ -59,10 +57,8 @@ const Editor = () => {
        editorState={editorState}
        onEditorStateChange={setEditorState}
        onSave={onSave}
-
        />
-    }
- 
+    } 
     </>
    )
 

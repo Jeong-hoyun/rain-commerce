@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import type {NextApiRequest,NextApiResponse} from 'next';
+import { json } from 'stream/consumers';
 
 const prisma=new PrismaClient()
 
@@ -30,8 +31,10 @@ type Data={
 
 export default async function handler(
     req:NextApiRequest,res:NextApiResponse<Data>
-    ) {
-      const {productId,itemContents}=JSON.parse(req.body)      
+    ) {  
+  
+      const {productId,itemContents}=req.body     
+ 
       if(productId===null||itemContents==null){
         res.status(400).json({msg:"no id or contents"})
         return;   
