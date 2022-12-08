@@ -3,18 +3,16 @@ import { PrismaClient,Prisma } from "@prisma/client";
 const prisma=new PrismaClient()
 
 const productData:Prisma.productsCreateInput[]=Array.apply(
-    null,Array(100)
+    null,Array(20)
     ).map((_,index)=>({
-        name:`우의 ${index+1}`,
-        contents :`{"blocks":[{"key":"feris","text":"우의입니다","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
-        category_id :2,
-        image_url: `/img/coats/rainbowcoat${(index+1)%10===0?10:(index+1)%10}.jpg`,
+        name:`장화 ${index+1}`,
+        contents :`{"blocks":[{"key":"feris","text":"우산입니다","type":"unstyled","depth":0,"inlineStyleRanges":[],"entityRanges":[],"data":{}}],"entityMap":{}}`,
+        category_id :3,
+        image_url: `/img/rainboots/Rainboots${(index+1)%10===0?10:(index+1)%10}.jpg`,
         price:Math.floor(Math.random()*(100000-20000)+20000),
-
     }))
 
 async function main() {
-    await prisma.products.deleteMany({})
 
     for (const x of productData){
         const product=await prisma.products.create({
