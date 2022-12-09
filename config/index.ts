@@ -35,3 +35,5 @@ export const getContains=(keyword?:string)=>{
 }
 
 export const fetchUrl = (url:string) => axios.get(url).then(response => response.data)
+
+

@@ -7,8 +7,10 @@ import { TAKE,categoryArray,FILTERS, fetchUrl } from '../../config';
 import {  IconSearch } from '@tabler/icons';
 import useDebounce from './../../hooks/useDebounce';
 import { useQuery } from '@tanstack/react-query';
+import { useRouter } from 'next/router';
 
 export default function Products() {
+    const router=useRouter()
     const [activePage,setPage]=useState<number>(0)
     const [selectedCategory,setCategory]=useState<string>("-1")
     const [selectedFilter, setFilter] = useState<string|null>(FILTERS[0].value);
@@ -80,7 +82,7 @@ fetchUrl(`/api/products?skip=${
                }).format(item.price)              
                return(
                 <>
-                <div key={`${id*Math.random()} uniq${name}`} className="p-4 lg:w-1/3  ">
+                <div key={id} className="p-4 lg:w-1/3" onClick={()=>router.push(`/products/${id}`)}>
                   <Image 
                  src={`${image_url}`}
                  height={512}

@@ -118,7 +118,8 @@ export default async function handler(
           try {             
             const {id}=req.query 
             const {count,keyword}=req.query      
-            const {category,filter,skip,take} =req.query     
+            const {category,filter,skip,take} =req.query   
+           
            if(req.method==="POST"){
           const {productId,itemContents}=req.body 
           const product=await updateProduct(Number(productId),itemContents) 
@@ -126,7 +127,7 @@ export default async function handler(
           }else if(count!=null){
               const response=await countProduct(String(category),Number(keyword)) 
               res.status(200).json({item:response,msg:"success"})
-          }else if(skip!=null&&take!=null){
+          }else if(skip!=null&&take!=null&&category!=null){
                 const response=await takeProduct({
                      skip:Number(skip),
                      take:Number(take),
@@ -135,16 +136,15 @@ export default async function handler(
                      keyword:String(keyword),
                 }) 
                 res.status(200).json({item:response,msg:"success"})
-          }else if(id===undefined){
-                const response=await getProducts()
-                res.status(200).json({item:response,msg:"success"})
-                return
-          }else{
-                const response=await getProduct(Number(id))
-                if(response===null){ throw "상품이 존재하지 않습니다" } 
-                res.status(200).json({item:response,msg:"success"})
+          }else if(id!=null){
+            const response=await getProduct(Number(id))
+            if(response===null){ throw "상품이 존재하지 않습니다" } 
+            res.status(200).json({item:response,msg:"success"})
+          }else {
+            const response=await getProducts()
+            res.status(200).json({item:response,msg:"success"})                   
             }                 
-        }catch(error){
+        }catch(error){        
             res.status(400).json({msg:"Failed"}) 
         }
     
