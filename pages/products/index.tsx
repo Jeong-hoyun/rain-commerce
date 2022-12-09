@@ -1,60 +1,46 @@
 
 import { categories, products } from '@prisma/client';
-import axios from "axios";
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Pagination, SegmentedControl,Select,Input  } from '@mantine/core';
-import { TAKE,categoryArray,FILTERS } from '../../config';
+import { TAKE,categoryArray,FILTERS, fetchUrl } from '../../config';
 import {  IconSearch } from '@tabler/icons';
 import useDebounce from './../../hooks/useDebounce';
-
+import { useQuery } from '@tanstack/react-query';
 
 export default function Products() {
     const [activePage,setPage]=useState<number>(0)
-    const [total,setTotal]=useState<number>(0)
-    const [products,setProducts]=useState<products[]>([])
-    const [categories,setCategories]=useState<categories[]>([])
     const [selectedCategory,setCategory]=useState<string>("-1")
     const [selectedFilter, setFilter] = useState<string|null>(FILTERS[0].value);
     const [keyword, setKeyword] = useState<string>("");
-
     const debouncedKeyword=useDebounce<string>(keyword)
-
-    useEffect(()=>{
-        const setItems=async ()=>{
-         const response=await axios.get(`/api/products?skip=0&take=${TAKE}`)
-         const data=await response.data
-         setProducts(data.item)
-        }
     
-        const setCategory=async ()=>{      
-          const response=await axios.get(`/api/categories`)
-          const categories=await response.data        
-          setCategories(categories.item)           
-      }       
-        setItems()
-        setCategory()    
-    },[])
+    const {data:categories}=useQuery(['/api/categories'],
+    ()=>
+    fetchUrl(`/api/categories`), 
+    {select:(data)=>data.item}
+    )
 
-   useEffect(()=>{
-    const setCount=async ()=>{      
-      const response=await axios.get(`/api/products?count=1&category=${selectedCategory}&keyword=${debouncedKeyword}`)
-      const data=await response.data        
-      setTotal(Math.ceil(data.item/TAKE))
-   }
-  setCount()
-   },[selectedCategory,])
+   const {data:total}=useQuery<{item:number},unknown,number>([`/api/products?count=1&category=${selectedCategory}&keyword=${debouncedKeyword}`],
+   ()=>
+   fetchUrl(`/api/products?count=1&category=${selectedCategory}&keyword=${debouncedKeyword}`),
+   {select:(data)=>Math.ceil(data.item/TAKE)}
+   )   
 
-   
-  useEffect(()=>{
-      let skip=TAKE*(activePage-1)
-      if(skip<0) {skip=1} 
-      axios.get(`/api/products?skip=${skip}&take=${TAKE}&category=${selectedCategory}&filter=${selectedFilter}&keyword=${debouncedKeyword}`)
-      .then(data=>setProducts(data.data.item))
-    }
-,[activePage,selectedCategory,selectedFilter,debouncedKeyword])
-
-  const onSearch=(e:React.ChangeEvent<HTMLInputElement>)=>{
+const {data:products}=useQuery<{item:products[]},unknown,products[]>(
+  [`/api/products?skip=${
+    TAKE*(activePage-1)<0?1:TAKE*(activePage-1)    
+  }&take=${TAKE}&category=${selectedCategory}&filter=${selectedFilter}&keyword=${debouncedKeyword}`
+  ], ()=>
+fetchUrl(`/api/products?skip=${
+  TAKE*(activePage-1)<0?1:TAKE*(activePage-1)    
+}&take=${TAKE}&category=${selectedCategory}&filter=${selectedFilter}&keyword=${debouncedKeyword}`)
+,
+{   
+  select:(data)=>data.item
+}
+)
+ const onSearch=(e:React.ChangeEvent<HTMLInputElement>)=>{
     setKeyword(e.target.value)
   }
 
@@ -120,9 +106,11 @@ export default function Products() {
        </>
                )
             })}
-              <div className='w-full flex mt-5 justify-center'>         
-          <Pagination page={activePage} onChange={setPage} total={total}  />
-          </div>
+            {total?
+                 <div className='w-full flex mt-5 justify-center'>         
+                 <Pagination page={activePage} onChange={setPage} total={total}  />
+                 </div>:null            
+            }         
         </div>
         </div>
     )

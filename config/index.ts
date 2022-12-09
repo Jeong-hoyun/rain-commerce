@@ -1,3 +1,5 @@
+import axios from "axios"
+
 export const TAKE=9
 
 export const categoryArray=["우산","우의","장화","소모품"]
@@ -31,3 +33,5 @@ export const getContains=(keyword?:string)=>{
     }
     :undefined;
 }
+
+export const fetchUrl = (url:string) => axios.get(url).then(response => response.data)
