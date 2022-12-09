@@ -1,13 +1,12 @@
 
 import { categories, products } from '@prisma/client';
-import axios, {AxiosResponse} from "axios";
+import axios from "axios";
 import Image from 'next/image';
-import { useState, useEffect, useCallback } from 'react';
-import { Pagination } from '@mantine/core';
-import { TAKE,categoryArray } from '../../config';
-
-
-
+import { useState, useEffect } from 'react';
+import { Pagination, SegmentedControl,Select,Input  } from '@mantine/core';
+import { TAKE,categoryArray,FILTERS } from '../../config';
+import {  IconSearch } from '@tabler/icons';
+import useDebounce from './../../hooks/useDebounce';
 
 
 export default function Products() {
@@ -15,6 +14,11 @@ export default function Products() {
     const [total,setTotal]=useState<number>(0)
     const [products,setProducts]=useState<products[]>([])
     const [categories,setCategories]=useState<categories[]>([])
+    const [selectedCategory,setCategory]=useState<string>("-1")
+    const [selectedFilter, setFilter] = useState<string|null>(FILTERS[0].value);
+    const [keyword, setKeyword] = useState<string>("");
+
+    const debouncedKeyword=useDebounce<string>(keyword)
 
     useEffect(()=>{
         const setItems=async ()=>{
@@ -22,39 +26,65 @@ export default function Products() {
          const data=await response.data
          setProducts(data.item)
         }
-        const setCount=async ()=>{      
-            const response=await axios.get(`/api/products?count=1`)
-            const data=await response.data        
-            setTotal(Math.ceil(data.item/TAKE))
-        }
+    
         const setCategory=async ()=>{      
           const response=await axios.get(`/api/categories`)
           const categories=await response.data        
           setCategories(categories.item)           
-      }
-        setCount()
+      }       
         setItems()
-        setCategory()
-    
+        setCategory()    
     },[])
+
+   useEffect(()=>{
+    const setCount=async ()=>{      
+      const response=await axios.get(`/api/products?count=1&category=${selectedCategory}&keyword=${debouncedKeyword}`)
+      const data=await response.data        
+      setTotal(Math.ceil(data.item/TAKE))
+   }
+  setCount()
+   },[selectedCategory,])
+
    
   useEffect(()=>{
-    if(activePage!=0){
-      const skip=TAKE*(activePage-1)
-      axios.get(`/api/products?skip=${skip}&take=${TAKE}`)
+      let skip=TAKE*(activePage-1)
+      if(skip<0) {skip=1} 
+      axios.get(`/api/products?skip=${skip}&take=${TAKE}&category=${selectedCategory}&filter=${selectedFilter}&keyword=${debouncedKeyword}`)
       .then(data=>setProducts(data.data.item))
     }
-  },[activePage])
+,[activePage,selectedCategory,selectedFilter,debouncedKeyword])
+
+  const onSearch=(e:React.ChangeEvent<HTMLInputElement>)=>{
+    setKeyword(e.target.value)
+  }
 
     return (
-        <>
+        <div className='px-36 mt-10 mb-10'> 
+     <div>
+     <Input
+      icon={<IconSearch />}
+      placeholder="상품을 검색해주세요"
+      onChange={onSearch}
+    />
+     </div>
+      <Select value={selectedFilter} onChange={setFilter} data={FILTERS} />
        {categories&&
-       categories.map((categories:categories)=>{
-        console.log(categories)
-        return(
-          <div>{categories.name}</div>
-        )       
-       })}
+       <div className='mb-4'>
+          <SegmentedControl
+          value={selectedCategory}
+          data={[
+            {label:"ALL",value:"-1"},
+            ...categories.map((ct:categories)=>({           
+                 label: ct.name, value:String(ct.id) 
+            })
+            )]}
+          onChange={setCategory}
+          color={'dark'}          
+        />  
+        </div>      
+        }
+         
+
         <div className='flex flex-wrap -m-4'>    
             {products&&products.map((item:products)=>{
                const {id,name,image_url,category_id}=item  
@@ -65,8 +95,7 @@ export default function Products() {
                return(
                 <>
                 <div key={`${id*Math.random()} uniq${name}`} className="p-4 lg:w-1/3  ">
-                 <p>{name}</p>
-                <Image 
+                  <Image 
                  src={`${image_url}`}
                  height={512}
                  width={512}
@@ -75,7 +104,11 @@ export default function Products() {
                  blurDataURL="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8b8FQDwAFLQG463LdcAAAAABJRU5ErkJggg=="                 
                  />     
 
-            <div className="text-center ">
+            <div className="text-center">
+            <span className="mr-3  items-center leading-none text-sm pr-3 py-1 border-gray-200">
+              {name}
+            </span>
+            <p>{}</p>
             <span className="text-gray-400 mr-3  items-center leading-none text-sm pr-3 py-1 border-gray-200">
               가격:{price}
             </span>
@@ -91,7 +124,7 @@ export default function Products() {
           <Pagination page={activePage} onChange={setPage} total={total}  />
           </div>
         </div>
-        </>
+        </div>
     )
   
 }

@@ -32,7 +32,7 @@ const Editor = () => {
 
      const onSave= async()=>{
       try {
-      const res= await axios.post('/api/product',
+      const res= await axios.post('/api/products',
       {     
             productId:productId,
             itemContents:
